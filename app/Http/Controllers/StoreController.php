@@ -2,72 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 class StoreController extends Controller
 {
-    
-    private array $products = [
-        [
-            'id' => 1,
-            'name' => 'Wireless Headphones',
-            'price' => 59.99,
-            'on_sale' => true,
-            'description' => 'Comfortable, long battery life, Bluetooth 5.2',
-            'image' => 'images/products/headphones.jpg',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Smart Watch',
-            'price' => 129.00,
-            'on_sale' => false,
-            'description' => 'Heart rate monitor, GPS, water resistant',
-            'image' => 'images/products/smartwatch.jpg',
-        ],
-        [
-            'id' => 3,
-            'name' => 'Gaming Mouse',
-            'price' => 39.50,
-            'on_sale' => false,
-            'description' => 'Ergonomic design, RGB, high DPI',
-            'image' => 'images/products/mouse.jpg',
-        ],
-    ];
-
-    public function index()
-    {
-        // return view('shop.index');
-    }
-
-    public function products()
-    {
-        $products = $this->products;
+    public function products() {
+        $products = [
+            ['name' => 'Nike Shoes', 'price' => 120, 'on_sale' => true, 'description' => 'Comfortable running shoes'],
+            ['name' => 'Adidas Jacket', 'price' => 80, 'on_sale' => false, 'description' => 'Winter warm jacket'],
+        ];
         return view('shop.products', compact('products'));
     }
 
-    public function productDetails($id = 1)
-    {
-        
-        $product = collect($this->products)->firstWhere('id', (int)$id) ?? $this->products[0];
+    public function productDetails($id = 0) {
+        $product = ['name' => 'Nike Shoes', 'price' => 120, 'on_sale' => true, 'description' => 'Comfortable running shoes'];
         return view('shop.product-details', compact('product'));
     }
 
-    public function cart()
-    {
-        return view('shop.cart');
-    }
-
-    public function about()
-    {
-        $title = 'About Our Store';
-        $description = 'We are a small team passionate about great products and great service.';
-        $rawHtml = '<p><strong>Our Mission:</strong> Deliver value with every order.</p>'; 
-
+    public function aboutUs() {
+        $title = "About RedStore";
+        $description = "We make sports accessible for everyone.";
+        $rawHtml = "<strong>Trusted by 1M+ users worldwide</strong>";
         return view('shop.about-us', compact('title', 'description', 'rawHtml'));
     }
 
-    public function contact()
-    {
+    public function contact() {
         return view('shop.contact');
+    }
+
+    public function cart() {
+        return view('shop.cart');
     }
 }
