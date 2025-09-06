@@ -1,10 +1,12 @@
 <?php
 
-use App\Http\Controllers\ShopController;
+
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\StoreController;
 
-Route::get('/shop', [ShopController::class ,'index']);
+Route::get('/products', [StoreController::class, 'products'])->name('products.index');
+Route::get('/products/{id}', [StoreController::class, 'productDetails'])->name('products.show');
+Route::get('/about-us', [StoreController::class, 'aboutUs'])->name('about');
+Route::get('/contact', [StoreController::class, 'contact'])->name('contact');
+Route::get('/cart', [StoreController::class, 'cart'])->name('cart');
