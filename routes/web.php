@@ -22,4 +22,10 @@ Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name
 Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update'); 
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
 
+use App\Http\Controllers\ContactController;
+
+Route::view('/contact', 'shop.contacts')->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+
 
