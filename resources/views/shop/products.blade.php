@@ -16,28 +16,33 @@
     </div>
 
     <div class="row">
-        @for ($i = 1; $i <= 12; $i++)
+        @foreach ($products as $product)
             <div class="col-4">
-                <img src="{{ asset("images/product-$i.jpg") }}">
-                <h4>Red Printed T-Shirt</h4>
+                {{-- الصورة: تأكد أن عندك حقل image_path في DB أو ضع صورة افتراضية --}}
+                <img src="{{ asset($product->image_path ?? 'images/default.jpg') }}" alt="{{ $product->name }}">
+                
+                <h4>{{ $product->name }}</h4>
+                
                 <div class="rating">
+                    {{-- تقدر تخزن تقييم المنتج في DB وتعرضه، هنا ثابت مثال --}}
                     <i class="fa fa-star"></i>
                     <i class="fa fa-star"></i>
                     <i class="fa fa-star"></i>
                     <i class="fa fa-star"></i>
                     <i class="fa fa-star-o"></i>
                 </div>
-                <p>$50.00</p>
+                
+                <p>${{ number_format($product->price, 2) }}</p>
+                
+                {{-- رابط لصفحة تفاصيل المنتج --}}
+                <a href="{{ route('products.show', $product->id) }}" class="btn">View Details</a>
             </div>
-        @endfor
+        @endforeach
     </div>
 
     <div class="page-btn">
-        <span>1</span>
-        <span>2</span>
-        <span>3</span>
-        <span>4</span>
-        <span>&#8594;</span>
+        {{-- روابط الترقيم --}}
+        {{ $products->links() }}
     </div>
 </div>
 @endsection
