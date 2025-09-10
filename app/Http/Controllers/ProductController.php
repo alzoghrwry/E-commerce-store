@@ -4,35 +4,39 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
- public function index()
+   
+    public function index()
     {
-        $products = Product::latest()->paginate(10); 
+        $products = Product::with('category')->latest()->paginate(10);
         return view('shop.products', compact('products'));
     }
 
-    public function show(Product $product)
+   
+    public function show($id)
     {
-        // Route Model Binding هنا يضمن أن $product موديل Eloquent
+        $product = Product::with(['category', 'reviews.user'])->findOrFail($id);
         return view('shop.product-details', compact('product'));
     }
 
-    
+  
     public function create()
     {
-        return view('shop.create-product');
+        $categories = Category::all(); 
+        return view('shop.create-product', compact('categories'));
     }
 
-    // حفظ منتج جديد
     public function store(Request $request)
     {
         $data = $request->validate([
             'name'        => 'required|string|min:2|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
+            'category_id' => 'nullable|exists:categories,id',
             'on_sale'     => 'nullable|boolean',
             'image'       => 'nullable|image|max:2048',
         ]);
@@ -46,27 +50,27 @@ class ProductController extends Controller
             'name'        => $data['name'],
             'description' => $data['description'] ?? null,
             'price'       => $data['price'],
+            'category_id' => $data['category_id'] ?? null,
             'on_sale'     => (bool)($data['on_sale'] ?? false),
             'image_path'  => $imagePath,
         ]);
 
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
-
-    
-    
     public function edit(Product $product)
     {
-        return view('shop.edit-product', compact('product'));
+        $categories = Category::all(); 
+        return view('shop.create-product', compact('product', 'categories'));
     }
 
-    // تحديث منتج
+   
     public function update(Request $request, Product $product)
     {
         $data = $request->validate([
             'name'        => 'required|string|min:2|max:255',
             'description' => 'nullable|string',
             'price'       => 'required|numeric|min:0',
+            'category_id' => 'nullable|exists:categories,id',
             'on_sale'     => 'nullable|boolean',
             'image'       => 'nullable|image|max:2048',
         ]);
@@ -83,6 +87,7 @@ class ProductController extends Controller
             'name'        => $data['name'],
             'description' => $data['description'] ?? null,
             'price'       => $data['price'],
+            'category_id' => $data['category_id'] ?? null,
             'on_sale'     => (bool)($data['on_sale'] ?? false),
         ]);
 

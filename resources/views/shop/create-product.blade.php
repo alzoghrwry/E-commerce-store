@@ -1,48 +1,107 @@
 @extends('layouts.app')
 
-@section('content')
-<div class="max-w-3xl mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4">Create Product</h1>
+@section('title', isset($product) ? 'Edit Product | RedStore' : 'Add New Product | RedStore')
 
-    @if ($errors->any())
-        <div class="mb-4 rounded-lg bg-red-100 p-3 text-red-800">
-            <ul class="list-disc ml-6">
-                @foreach ($errors->all() as $e) <li>{{ $e }}</li> @endforeach
+@section('content')
+<div class="max-w-5xl mx-auto mt-10 p-8 bg-white rounded-lg shadow-lg">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">
+        {{ isset($product) ? 'Edit Product' : 'Add New Product' }}
+    </h1>
+
+   
+    @if(session('success'))
+        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+            {{ session('success') }}
+        </div>
+    @endif
+
+   
+    @if($errors->any())
+        <div class="mb-4 p-4 bg-red-100 text-red-800 rounded">
+            <ul class="list-disc pl-5">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
             </ul>
         </div>
     @endif
 
-    <form method="POST" action="{{ route('products.store') }}" enctype="multipart/form-data" class="space-y-4">
+    <form action="{{ isset($product) ? route('products.update', $product->id) : route('products.store') }}" 
+          method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
+        @if(isset($product))
+            @method('PUT')
+        @endif
 
+       
         <div>
-            <label class="block mb-1">Name</label>
-            <input name="name" value="{{ old('name') }}" class="w-full border rounded-lg p-2" required>
+            <label for="name" class="block text-gray-700 font-semibold mb-2">Product Name</label>
+            <input type="text" name="name" id="name" 
+                   value="{{ old('name', $product->name ?? '') }}"
+                   class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   placeholder="Enter product name">
         </div>
 
+       
         <div>
-            <label class="block mb-1">Description</label>
-            <textarea name="description" class="w-full border rounded-lg p-2" rows="4">{{ old('description') }}</textarea>
+            <label for="description" class="block text-gray-700 font-semibold mb-2">Description</label>
+            <textarea name="description" id="description" rows="4"
+                      class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter product description">{{ old('description', $product->description ?? '') }}</textarea>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+           
+            <div>
+                <label for="price" class="block text-gray-700 font-semibold mb-2">Price ($)</label>
+                <input type="number" step="0.01" name="price" id="price" 
+                       value="{{ old('price', $product->price ?? '') }}"
+                       class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                       placeholder="0.00">
+            </div>
+
+           
+            <div>
+                <label for="category_id" class="block text-gray-700 font-semibold mb-2">Category</label>
+                <select name="category_id" id="category_id"
+                        class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Select Category</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" 
+                            {{ old('category_id', $product->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- حالة البيع --}}
+            <div class="flex items-center mt-6 md:mt-0">
+                <input type="checkbox" name="on_sale" id="on_sale" class="mr-2"
+                       {{ old('on_sale', $product->on_sale ?? false) ? 'checked' : '' }}>
+                <label for="on_sale" class="text-gray-700 font-semibold">On Sale</label>
+            </div>
+        </div>
+
+       
         <div>
-            <label class="block mb-1">Price</label>
-            <input type="number" step="0.01" name="price" value="{{ old('price') }}" class="w-full border rounded-lg p-2" required>
+            <label for="image" class="block text-gray-700 font-semibold mb-2">Product Image</label>
+            <input type="file" name="image" id="image"
+                   class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            
+            @if(isset($product) && $product->image_path)
+                <img src="{{ asset('storage/' . $product->image_path) }}" 
+                     alt="Product Image" class="mt-4 w-32 h-32 object-cover rounded border">
+            @endif
         </div>
 
-        <div class="flex items-center gap-2">
-            <input type="checkbox" name="on_sale" value="1" {{ old('on_sale') ? 'checked' : '' }}>
-            <span>On Sale</span>
-        </div>
-
-        <div>
-            <label class="block mb-1">Image</label>
-            <input type="file" name="image" class="w-full border rounded-lg p-2">
-        </div>
-
-        <div class="flex items-center gap-3">
-            <button class="px-4 py-2 rounded-lg bg-blue-600 text-white">Save</button>
-            <a href="{{ route('products.index') }}" class="underline">Cancel</a>
+        {{-- زر الإرسال --}}
+        <div class="flex justify-end">
+            <button type="submit"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded shadow">
+                {{ isset($product) ? 'Update Product' : 'Add Product' }}
+            </button>
         </div>
     </form>
 </div>

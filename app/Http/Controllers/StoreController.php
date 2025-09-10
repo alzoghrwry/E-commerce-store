@@ -24,8 +24,8 @@ class StoreController extends Controller
         return view('shop.about-us', compact('title', 'description', 'rawHtml'));
     }
 
-    public function contact() {
-        return view('shop.contact');
+    public function account() {
+        return view('shop.account');
     }
 
     public function cart() {

@@ -20,6 +20,7 @@
     @include('partials.footer')
 
     <script src="{{ asset('js/main.js') }}"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
 </body>
 
 </html>
